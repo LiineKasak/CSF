@@ -48,6 +48,10 @@ struct Point {
 		double u[3];
     };
 
+    // -- begin -- Created by Liine Kasak on 09/10/2019.
+    std::vector<double> values;
+    // -- end --
+
     Point() : x(0), y(0), z(0) {}
 };
 
