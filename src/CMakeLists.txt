@@ -10,7 +10,7 @@ endif()
 
 file(GLOB_RECURSE sources *.cpp)
 
-ADD_LIBRARY(CSF STATIC ${sources} PcdReaderWriter.cpp PcdReaderWriter.h)
+ADD_LIBRARY(CSF STATIC ${sources} PcdCSF.cpp PcdCSF.h PcdMetadata.cpp PcdMetadata.h)
 
 set_target_properties(CSF PROPERTIES OUTPUT_NAME "CSF")
 

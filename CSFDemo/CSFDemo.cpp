@@ -19,7 +19,7 @@
 #include <vector>
 #include "Cfg.h"
 #include "../src/CSF.h"
-#include "../src/PcdReaderWriter.h"
+#include "../src/PcdCSF.h"
 #include <ctime>
 #include <cstdlib>
 
@@ -28,7 +28,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Cfg cfg;
     string slop_smooth;
-    const char *file = "config.cfg";
+    const char *file = "/home/liine/CLionProjects/CSF/CSFDemo/config.cfg";
     cfg.readConfigFile(file, "slop_smooth", slop_smooth);
     bool ss = false;
     if (slop_smooth == "true" || slop_smooth == "True") {
@@ -53,23 +53,21 @@ int main(int argc, char *argv[]) {
     string terr_pointClouds_filepath;
     cfg.readConfigFile(file, "terr_pointClouds_filepath", terr_pointClouds_filepath);
 
-    CSF csf;
-    PcdReaderWriter pcdReaderWriter;
-    pcdReaderWriter.readFile(terr_pointClouds_filepath, &csf.getPointCloud());
+    PcdCSF pcdCsf = PcdCSF(terr_pointClouds_filepath);
 
     clock_t start, end;
     start = clock();
 
     std::vector<int> groundIndexes, offGroundIndexes;
 
-    csf.do_filtering(groundIndexes, offGroundIndexes, true);
+    pcdCsf.doFiltering(groundIndexes, offGroundIndexes, false);
 
     end = clock();
     auto dur = (double) (end - start);
     printf("Use Time:%f\n", (dur / CLOCKS_PER_SEC));
 
-    pcdReaderWriter.writeFile("non-ground.pcd", offGroundIndexes, csf.getPointCloud());
-    pcdReaderWriter.writeFile("ground.pcd", groundIndexes, csf.getPointCloud());
+    pcdCsf.writeFile("/home/liine/Desktop/non-ground.pcd", offGroundIndexes);
+    // pcdCsf.writeFile("ground.pcd", groundIndexes, csf.getPointCloud());
 
     return 0;
 }
