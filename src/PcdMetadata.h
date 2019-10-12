@@ -15,7 +15,7 @@ class PcdMetadata {
 
 public:
     static int STANDARD_HEADER_SIZE;
-    static int VIEWPOINT_SIZE;
+    static int STANDARD_VIEWPOINT_SIZE;
 
     int headerSize;
     string version;

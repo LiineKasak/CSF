@@ -9,8 +9,8 @@
 #include <sstream>
 #include "PcdMetadata.h"
 
-int PcdMetadata::STANDARD_HEADER_SIZE = 10; // standard for pcd files
-int PcdMetadata::VIEWPOINT_SIZE = 7; // standard
+int PcdMetadata::STANDARD_HEADER_SIZE = 10;
+int PcdMetadata::STANDARD_VIEWPOINT_SIZE = 7;
 
 PcdMetadata::PcdMetadata(const string &filename) {
     cout << "Reading header from " << filename << "..." << endl;
@@ -56,7 +56,7 @@ void PcdMetadata::resolveProperty(vector<string> words) {
             this->counts.push_back(stoi(words[i + 1]));
         }
     } else if (property == "VIEWPOINT") {
-        for (unsigned long i = 0; i < PcdMetadata::VIEWPOINT_SIZE; i++) {
+        for (unsigned long i = 0; i < PcdMetadata::STANDARD_VIEWPOINT_SIZE; i++) {
             this->viewpoints.push_back(stod(words[i + 1]));
         }
     } else if (property == "TYPE") {
