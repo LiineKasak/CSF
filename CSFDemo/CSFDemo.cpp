@@ -28,7 +28,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
     Cfg cfg;
     string slop_smooth;
-    const char *file = "/home/liine/CLionProjects/CSF/CSFDemo/config.cfg";
+    const char *file = "./config.cfg";
     cfg.readConfigFile(file, "slop_smooth", slop_smooth);
     bool ss = false;
     if (slop_smooth == "true" || slop_smooth == "True") {
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     auto dur = (double) (end - start);
     printf("Use Time:%f\n", (dur / CLOCKS_PER_SEC));
 
-    pcdCsf.writeFile("/home/liine/Desktop/non-ground.pcd", offGroundIndexes);
+    pcdCsf.writeFile("./non-ground.pcd", offGroundIndexes);
     // pcdCsf.writeFile("ground.pcd", groundIndexes, csf.getPointCloud());
 
     return 0;

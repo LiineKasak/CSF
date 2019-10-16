@@ -5,12 +5,93 @@
 #include <iomanip>
 #include "PcdCSF.h"
 
+// START: René
+#include <pcl/io/pcd_io.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/console/time.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
+#include <pcl/common/eigen.h>
+
+Eigen::Vector4f    translation;
+Eigen::Quaternionf orientation;
+
+
+bool loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
+{
+  pcl::console::TicToc tt;
+  pcl::console::print_highlight ("Loading point cloud data ");
+  pcl::console::print_value ("%s ", filename.c_str ());
+
+  tt.tic ();
+  if (pcl::io::loadPCDFile (filename, cloud, translation, orientation) < 0)
+    return (false);
+  pcl::console::print_info ("[done, ");
+  pcl::console::print_value ("%g", tt.toc ());
+  pcl::console::print_info (" ms : ");
+  pcl::console::print_value ("%d", cloud.width * cloud.height);
+  pcl::console::print_info (" points]\n");
+  pcl::console::print_info ("Available dimensions: ");
+  pcl::console::print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+
+  return (true);
+}
+
+
+void saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
+{
+    // if (output.data.size() > 0)
+    if (output.width * output.height > 0)
+    {
+        pcl::console::TicToc tt;
+        tt.tic ();
+
+        pcl::console::print_highlight ("Saving ");
+        pcl::console::print_value ("%s ", filename.c_str ());
+
+        pcl::PCDWriter w;
+        w.writeBinaryCompressed (filename, output, translation, orientation);
+
+        pcl::console::print_info ("[done, ");
+        pcl::console::print_value ("%g", tt.toc ());
+        pcl::console::print_info (" ms : ");
+        pcl::console::print_value ("%d", output.width * output.height);
+        pcl::console::print_info (" points]\n");
+    }
+    else
+    {
+        /* code */
+        pcl::console::print_highlight ("Saving ");
+        pcl::console::print_value ("%s ", filename.c_str ());
+        pcl::console::print_highlight ("FAILED: no data!\n");
+    }
+}
+// END: René
 
 void PcdCSF::readPointsFromFile() {
 
     csf::PointCloud *pointCloud = &csf.getPointCloud();
 
-    cout << "Reading points from " << filename << "..." << endl;
+    pcl::PCLPointCloud2::Ptr cloud   (new pcl::PCLPointCloud2);
+    // Load the PCD file using PCL
+    if (!loadCloud (filename.c_str(), *cloud))
+    {
+        pcl::console::print_error("FAILED ");
+        pcl::console::print_info("\n");
+        // pcl::console::print_value ("%s\n", argv[p_file_indices[0]]);
+        // return (-1);
+    }
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr xyz (new pcl::PointCloud<pcl::PointXYZ>);
+    fromPCLPointCloud2 (*cloud,    *xyz);
+
+    // auto i = xyz->begin();
+    // while (i != xyz->end())
+    // {
+    //     std::cout << i->x << std::endl;
+    // }
+
+    // cout << "Reading points from " << filename << "..." << endl;
 
     ifstream fin(filename.c_str(), ios::in);
     char line[500];
@@ -18,26 +99,36 @@ void PcdCSF::readPointsFromFile() {
     int headerSize = max(PcdMetadata::STANDARD_HEADER_SIZE, this->metadata.headerSize);
     for (int i = 0; i < headerSize; i++) fin.getline(line, sizeof(line)); // skip header lines
 
-    while (fin.getline(line, sizeof(line))) {
-        stringstream words(line);
+    auto i = xyz->begin();
+    while (i != xyz->end())
+    {
+        // std::cout <<                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      i->x << std::endl;
+    // while (fin.getline(line, sizeof(line))) {
+    //     stringstream words(line);
 
-        string x, y, z;
-        words >> x;
-        words >> y;
-        words >> z;
+    //     string x, y, z;
+    //     words >> x;
+    //     words >> y;
+    //     words >> z;
 
         csf::Point point;
-        point.x = atof(x.c_str());
-        point.y = -atof(z.c_str());
-        point.z = atof(y.c_str());
+        // point.x = atof(x.c_str());
+        // point.y = -atof(z.c_str());
+        // point.z = atof(y.c_str());
 
-        string valueStr;
-        double value;
-        for (string key : metadata.fields) {
-            words >> valueStr;
-            value = atof(valueStr.c_str());
-            point.values.push_back(value);
-        }
+        point.x = i->x;
+        point.y = -i->y;
+        point.z = i->z;
+
+        i++;
+
+        // string valueStr;
+        // double value;
+        // for (string key : metadata.fields) {
+        //     words >> valueStr;
+        //     value = atof(valueStr.c_str());
+        //     point.values.push_back(value);
+        // }
 
         pointCloud->push_back(point);
     }
@@ -50,35 +141,52 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
         return;
     }
 
-    ofstream f1(fileName.c_str(), ios::out);
+    pcl::PCLPointCloud2::Ptr cloud   (new pcl::PCLPointCloud2);
 
-    if (!f1)
-        return;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr xyz (new pcl::PointCloud<pcl::PointXYZ>);
+
+
+    // ofstream f1(fileName.c_str(), ios::out);
+
+    // if (!f1)
+    //     return;
 
     // write header
     int points = indexes.size();
     cout << "Saving " << points << " points." << endl;
     this->metadata.points = points;
     this->metadata.width = points;
-    f1 << this->metadata.getHeader();
+    // f1 << this->metadata.getHeader();
+
+    // std::cout << this->metadata.getHeader() << std::endl;
 
     // write points
     csf::PointCloud pointCloud = this->csf.getPointCloud();
 
     for (int i : indexes) {
-        f1 << fixed << setprecision(2)
-           << pointCloud[i].x << " "
-           << pointCloud[i].z << " " // CSF has switched z and y
-           << -pointCloud[i].y;
+        (*xyz).push_back (
+            pcl::PointXYZ (
+                pointCloud[i].x, 
+                pointCloud[i].z, 
+                -pointCloud[i].y)); 
+        
+        // f1 << fixed << setprecision(2)
+        //    << pointCloud[i].x << " "
+        //    << pointCloud[i].z << " " // CSF has switched z and y
+        //    << -pointCloud[i].y;
 
-        // write additional point parameters
-        for (unsigned long k = 0; k < metadata.fields.size(); k++) {
-            f1 << fixed << setprecision(2) << " " << pointCloud[i].values[k];
-        }
-        f1 << endl;
+        // // write additional point parameters
+        // for (unsigned long k = 0; k < metadata.fields.size(); k++) {
+        //     f1 << fixed << setprecision(2) << " " << pointCloud[i].values[k];
+        // }
+        // f1 << endl;
     }
 
-    f1.close();
+    toPCLPointCloud2(*xyz, *cloud);
+    saveCloud("./non-ground.pcd", *cloud);
+    // saveCloud(filename.c_str(), *cloud);
+
+    // f1.close();
 }
 
 PcdCSF::PcdCSF(const string &filename) {
