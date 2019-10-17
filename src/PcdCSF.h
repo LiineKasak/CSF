@@ -17,6 +17,8 @@
 #include "PcdMetadata.h"
 #include "CSF.h"
 
+#include <pcl/PCLPointCloud2.h>
+
 using namespace std;
 
 
@@ -26,6 +28,8 @@ private:
     string filename;
     PcdMetadata metadata;
     CSF csf;
+
+    pcl::PCLPointCloud2 cloud; //   (new pcl::PCLPointCloud2)
 
     void readPointsFromFile();
 

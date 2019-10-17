@@ -72,9 +72,10 @@ void PcdCSF::readPointsFromFile() {
 
     csf::PointCloud *pointCloud = &csf.getPointCloud();
 
-    pcl::PCLPointCloud2::Ptr cloud   (new pcl::PCLPointCloud2);
+    // pcl::PCLPointCloud2::Ptr cloud   (new pcl::PCLPointCloud2);
     // Load the PCD file using PCL
-    if (!loadCloud (filename.c_str(), *cloud))
+    std::string file_input (filename);
+    if (!loadCloud (file_input, this->cloud))
     {
         pcl::console::print_error("FAILED ");
         pcl::console::print_info("\n");
@@ -83,7 +84,7 @@ void PcdCSF::readPointsFromFile() {
     }
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr xyz (new pcl::PointCloud<pcl::PointXYZ>);
-    fromPCLPointCloud2 (*cloud,    *xyz);
+    fromPCLPointCloud2 (this->cloud,    *xyz);
 
     // auto i = xyz->begin();
     // while (i != xyz->end())
@@ -117,8 +118,8 @@ void PcdCSF::readPointsFromFile() {
         // point.z = atof(y.c_str());
 
         point.x = i->x;
-        point.y = -i->y;
-        point.z = i->z;
+        point.y = -i->z;
+        point.z = i->y;
 
         i++;
 
@@ -141,7 +142,7 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
         return;
     }
 
-    pcl::PCLPointCloud2::Ptr cloud   (new pcl::PCLPointCloud2);
+    pcl::PCLPointCloud2::Ptr tmp   (new pcl::PCLPointCloud2);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr xyz (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -182,9 +183,11 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
         // f1 << endl;
     }
 
-    toPCLPointCloud2(*xyz, *cloud);
-    saveCloud("./non-ground.pcd", *cloud);
-    // saveCloud(filename.c_str(), *cloud);
+    // pcl:: copyPointCloud (this->cloud, indexes, *tmp);
+    toPCLPointCloud2(*xyz, *tmp);
+    saveCloud("./non-ground.pcd", *tmp);
+    // saveCloud(filename, *tmp);
+    // saveCloud(filename, *cloud);
 
     // f1.close();
 }
@@ -193,6 +196,8 @@ PcdCSF::PcdCSF(const string &filename) {
     this->filename = filename;
     this->metadata = PcdMetadata(filename);
     this->readPointsFromFile();
+    pcl::PCLPointCloud2::Ptr tmp   (new pcl::PCLPointCloud2);
+    this->cloud =  *tmp;
 }
 
 void PcdCSF::doFiltering(std::vector<int> &groundIndexes, std::vector<int> &offGroundIndexes, bool exportCloth) {
