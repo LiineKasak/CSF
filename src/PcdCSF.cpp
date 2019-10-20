@@ -144,8 +144,10 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
 
     pcl::PCLPointCloud2::Ptr tmp   (new pcl::PCLPointCloud2);
 
+    // pcl::PointCloud<pcl::PointXYZ>::Ptr abc (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr xyz (new pcl::PointCloud<pcl::PointXYZ>);
 
+    // fromPCLPointCloud2 (this->cloud,    *abc);
 
     // ofstream f1(fileName.c_str(), ios::out);
 
@@ -183,7 +185,26 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
         // f1 << endl;
     }
 
-    // pcl:: copyPointCloud (this->cloud, indexes, *tmp);
+    // pcl::copyPointCloud (this->cloud, indexes, *tmp);
+
+    // pcl::PointIndices::Ptr everything_but_the_plane (new pcl::PointIndices);
+    // std::vector<int> indices_fullset (abc->size ());
+    // for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
+    // indices_fullset[p_it] = p_it;
+
+    // vector<int> out_indexes;
+
+    // // Copying vector by copy function 
+    // copy(indexes.begin(), indexes.end(), back_inserter(out_indexes)); 
+
+    // std::sort (out_indexes.begin (), out_indexes.end ());
+    // set_difference (indices_fullset.begin (), indices_fullset.end (),
+    //                 indexes.begin (), indexes.end (),
+    //                 inserter (everything_but_the_plane->indices, everything_but_the_plane->indices.begin ()));
+
+    // Convert data back
+    // pcl:: PCLPointCloud2 output;
+    // pcl:: copyPointCloud (this->cloud, everything_but_the_plane->indices, *tmp);
     toPCLPointCloud2(*xyz, *tmp);
     saveCloud("./non-ground.pcd", *tmp);
     // saveCloud(filename, *tmp);

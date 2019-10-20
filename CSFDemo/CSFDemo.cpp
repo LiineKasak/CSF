@@ -23,9 +23,29 @@
 #include <ctime>
 #include <cstdlib>
 
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
+
+
 using namespace std;
 
+void printHelp (char **argv)
+{
+  pcl::console::print_error ("Syntax is: %s <arguments>\n", argv[0]);
+  pcl::console::print_info ("  where arguments are:\n");
+  pcl::console::print_info ("                     -terr_pointClouds_filepath X = output.pcd\n");
+  pcl::console::print_info ("                     -class_threshold X = class threshold\n");
+  pcl::console::print_info ("                     -cloth_resolution X = cloth resolution\n");
+  pcl::console::print_info ("                     -iterations X  = iterations\n");
+  pcl::console::print_info ("                     -rigidness X = rigidness\n");
+  pcl::console::print_info ("                     -time_step X = time step\n");
+}
+
 int main(int argc, char *argv[]) {
+    if((pcl::console::find_argument(argc, argv, "--help") != -1) || (pcl::console::find_argument(argc, argv, "-h") != -1)){
+        printHelp (argv);
+        return (-1);
+    }
     Cfg cfg;
     string slop_smooth;
     const char *file = "./config.cfg";
@@ -52,6 +72,13 @@ int main(int argc, char *argv[]) {
     cfg.readConfigFile(file, "time_step", time_step);
     string terr_pointClouds_filepath;
     cfg.readConfigFile(file, "terr_pointClouds_filepath", terr_pointClouds_filepath);
+
+    pcl::console::parse_argument (argc, argv, "-class_threshold",           class_threshold);
+    pcl::console::parse_argument (argc, argv, "-cloth_resolution",          cloth_resolution);
+    pcl::console::parse_argument (argc, argv, "-iterations",                iterations);
+    pcl::console::parse_argument (argc, argv, "-rigidness",                 rigidness);
+    pcl::console::parse_argument (argc, argv, "-time_step",                 time_step);
+    pcl::console::parse_argument (argc, argv, "-terr_pointClouds_filepath", terr_pointClouds_filepath);
 
     PcdCSF pcdCsf = PcdCSF(terr_pointClouds_filepath);
 
