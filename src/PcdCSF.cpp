@@ -94,11 +94,12 @@ void PcdCSF::readPointsFromFile() {
 
     // cout << "Reading points from " << filename << "..." << endl;
 
-    ifstream fin(filename.c_str(), ios::in);
-    char line[500];
+    // ifstream fin(filename.c_str(), ios::in);
+    // char line[500];
 
-    int headerSize = max(PcdMetadata::STANDARD_HEADER_SIZE, this->metadata.headerSize);
-    for (int i = 0; i < headerSize; i++) fin.getline(line, sizeof(line)); // skip header lines
+    // int headerSize = max(PcdMetadata::STANDARD_HEADER_SIZE, this->metadata.headerSize);
+    // for (int i = 0; i < headerSize; i++) fin.getline(line, sizeof(line)); // skip header lines
+    // fin.close();
 
     auto i = xyz->begin();
     while (i != xyz->end())
@@ -157,8 +158,8 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
     // write header
     int points = indexes.size();
     cout << "Saving " << points << " points." << endl;
-    this->metadata.points = points;
-    this->metadata.width = points;
+    // this->metadata.points = points;
+    // this->metadata.width = points;
     // f1 << this->metadata.getHeader();
 
     // std::cout << this->metadata.getHeader() << std::endl;
@@ -215,7 +216,7 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
 
 PcdCSF::PcdCSF(const string &filename) {
     this->filename = filename;
-    this->metadata = PcdMetadata(filename);
+    // this->metadata = PcdMetadata(filename);
     this->readPointsFromFile();
     pcl::PCLPointCloud2::Ptr tmp   (new pcl::PCLPointCloud2);
     this->cloud =  *tmp;

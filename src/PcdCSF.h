@@ -14,7 +14,7 @@
 #include <boost/algorithm/string/split.hpp> // Include for boost::split
 
 #include "point_cloud.h"
-#include "PcdMetadata.h"
+// #include "PcdMetadata.h"
 #include "CSF.h"
 
 #include <pcl/PCLPointCloud2.h>
@@ -26,7 +26,7 @@ class PcdCSF {
 
 private:
     string filename;
-    PcdMetadata metadata;
+    // PcdMetadata metadata;
     CSF csf;
 
     pcl::PCLPointCloud2 cloud; //   (new pcl::PCLPointCloud2)
