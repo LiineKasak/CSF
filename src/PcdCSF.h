@@ -21,6 +21,8 @@
 
 using namespace std;
 
+bool loadCloud (const std::string &file_name, pcl::PCLPointCloud2 &cloud);
+void saveCloud (const std::string &file_name, const pcl::PCLPointCloud2 &output);
 
 class PcdCSF {
 
@@ -40,7 +42,7 @@ public:
                      std::vector<int> &offGroundIndexes,
                      bool exportCloth = false);
 
-    void writeFile(const string &fileName, const vector<int> &indexes);
+    void writeFile(const string &file_Name, const vector<int> &indexes);
 };
 
 

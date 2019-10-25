@@ -17,14 +17,14 @@ Eigen::Vector4f    translation;
 Eigen::Quaternionf orientation;
 
 
-bool loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
+bool loadCloud (const std::string &file_name, pcl::PCLPointCloud2 &cloud)
 {
   pcl::console::TicToc tt;
   pcl::console::print_highlight ("Loading point cloud data ");
-  pcl::console::print_value ("%s ", filename.c_str ());
+  pcl::console::print_value ("%s ", file_name.c_str ());
 
   tt.tic ();
-  if (pcl::io::loadPCDFile (filename, cloud, translation, orientation) < 0)
+  if (pcl::io::loadPCDFile (file_name, cloud, translation, orientation) < 0)
     return (false);
   pcl::console::print_info ("[done, ");
   pcl::console::print_value ("%g", tt.toc ());
@@ -38,7 +38,7 @@ bool loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 }
 
 
-void saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
+void saveCloud (const std::string &file_name, const pcl::PCLPointCloud2 &output)
 {
     // if (output.data.size() > 0)
     if (output.width * output.height > 0)
@@ -47,10 +47,10 @@ void saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
         tt.tic ();
 
         pcl::console::print_highlight ("Saving ");
-        pcl::console::print_value ("%s ", filename.c_str ());
+        pcl::console::print_value ("%s ", file_name.c_str ());
 
         pcl::PCDWriter w;
-        w.writeBinaryCompressed (filename, output, translation, orientation);
+        w.writeBinaryCompressed (file_name, output, translation, orientation);
 
         pcl::console::print_info ("[done, ");
         pcl::console::print_value ("%g", tt.toc ());
@@ -62,7 +62,7 @@ void saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
     {
         /* code */
         pcl::console::print_highlight ("Saving ");
-        pcl::console::print_value ("%s ", filename.c_str ());
+        pcl::console::print_value ("%s ", file_name.c_str ());
         pcl::console::print_highlight ("FAILED: no data!\n");
     }
 }
@@ -74,7 +74,7 @@ void PcdCSF::readPointsFromFile() {
 
     // pcl::PCLPointCloud2::Ptr cloud   (new pcl::PCLPointCloud2);
     // Load the PCD file using PCL
-    std::string file_input (filename);
+    std::string file_input (this->filename);
     if (!loadCloud (file_input, this->cloud))
     {
         pcl::console::print_error("FAILED ");
@@ -137,9 +137,9 @@ void PcdCSF::readPointsFromFile() {
     cout << "Read " << pointCloud->size() << " points.";
 }
 
-void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
-    cout << "Saving points to " << fileName << endl;
-    if (fileName.empty()) {
+void PcdCSF::writeFile(const string &file_name, const vector<int> &indexes) {
+    cout << "Saving points to " << file_name << endl;
+    if (file_name.empty()) {
         return;
     }
 
@@ -173,17 +173,6 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
                 pointCloud[i].x, 
                 pointCloud[i].z, 
                 -pointCloud[i].y)); 
-        
-        // f1 << fixed << setprecision(2)
-        //    << pointCloud[i].x << " "
-        //    << pointCloud[i].z << " " // CSF has switched z and y
-        //    << -pointCloud[i].y;
-
-        // // write additional point parameters
-        // for (unsigned long k = 0; k < metadata.fields.size(); k++) {
-        //     f1 << fixed << setprecision(2) << " " << pointCloud[i].values[k];
-        // }
-        // f1 << endl;
     }
 
     // pcl::copyPointCloud (this->cloud, indexes, *tmp);
@@ -207,8 +196,8 @@ void PcdCSF::writeFile(const string &fileName, const vector<int> &indexes) {
     // pcl:: PCLPointCloud2 output;
     // pcl:: copyPointCloud (this->cloud, everything_but_the_plane->indices, *tmp);
     toPCLPointCloud2(*xyz, *tmp);
-    saveCloud("./non-ground.pcd", *tmp);
-    // saveCloud(filename, *tmp);
+    // saveCloud("./non-ground.pcd", *tmp);
+    saveCloud(file_name, *tmp);
     // saveCloud(filename, *cloud);
 
     // f1.close();
