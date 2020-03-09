@@ -2,6 +2,10 @@
 */*.bin
 */*.log
 */*.a
+**.pcd
+**/*_LAS
+**/*_LAS_A
+*/*.bak
 */.directory
 .directory
 .vscode
