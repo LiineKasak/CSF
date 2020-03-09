@@ -21,21 +21,21 @@
 
 using namespace std;
 
-bool loadCloud (const std::string &file_name, pcl::PCLPointCloud2 &cloud);
-void saveCloud (const std::string &file_name, const pcl::PCLPointCloud2 &output);
-
 class PcdCSF {
 
 private:
     string filename;
-    // PcdMetadata metadata;
     CSF csf;
 
-    pcl::PCLPointCloud2 cloud; //   (new pcl::PCLPointCloud2)
 
     void readPointsFromFile();
 
 public:
+
+    bool loadCloud (const std::string &file_name);
+    void saveCloud (const std::string &file_name, const pcl::PCLPointCloud2 &output);
+    pcl::PCLPointCloud2 cloud;
+    pcl::PCLPointCloud2 cloud2; //   backup data
     explicit PcdCSF(const string &filename);
 
     void doFiltering(std::vector<int> &groundIndexes,

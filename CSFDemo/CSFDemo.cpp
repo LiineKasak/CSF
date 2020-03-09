@@ -94,8 +94,7 @@ int main(int argc, char *argv[]) {
     printf("Use Time:%f\n", (dur / CLOCKS_PER_SEC));
 
     pcdCsf.writeFile("non-ground.pcd", offGroundIndexes);
-    pcdCsf.writeFile("ground.pcd", groundIndexes); //, csf.getPointCloud());
-    // pcdCsf.writeFile("ground.pcd", groundIndexes, csf.getPointCloud());
+    pcdCsf.writeFile("ground.pcd", groundIndexes);
 
     return 0;
 }
