@@ -37,6 +37,7 @@ public:
     pcl::PCLPointCloud2 cloud;
     pcl::PCLPointCloud2 cloud2; //   backup data
     explicit PcdCSF(const string &filename);
+    explicit PcdCSF(const string &filename, bool bSloopSmooth, double time_step, double class_threshold, double cloth_resolution, int rigidness, int interations);
 
     void doFiltering(std::vector<int> &groundIndexes,
                      std::vector<int> &offGroundIndexes,

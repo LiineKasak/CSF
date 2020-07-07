@@ -33,7 +33,9 @@ void printHelp (char **argv)
 {
   pcl::console::print_error ("Syntax is: %s <arguments>\n", argv[0]);
   pcl::console::print_info ("  where arguments are:\n");
-  pcl::console::print_info ("                     -terr_pointClouds_filepath X = output.pcd\n");
+  pcl::console::print_info ("                     -terr_pointClouds_filepath X = input.pcd\n");
+  pcl::console::print_info ("                     (out: input_ground.pcd, input_non-ground.pcd\n");
+  pcl::console::print_info ("                     -slop_smooth X = 0/1\n");
   pcl::console::print_info ("                     -class_threshold X = class threshold\n");
   pcl::console::print_info ("                     -cloth_resolution X = cloth resolution\n");
   pcl::console::print_info ("                     -iterations X  = iterations\n");
@@ -73,6 +75,7 @@ int main(int argc, char *argv[]) {
     string terr_pointClouds_filepath;
     cfg.readConfigFile(file, "terr_pointClouds_filepath", terr_pointClouds_filepath);
 
+    pcl::console::parse_argument (argc, argv, "-slop_smooth",               ss);
     pcl::console::parse_argument (argc, argv, "-class_threshold",           class_threshold);
     pcl::console::parse_argument (argc, argv, "-cloth_resolution",          cloth_resolution);
     pcl::console::parse_argument (argc, argv, "-iterations",                iterations);
@@ -80,7 +83,8 @@ int main(int argc, char *argv[]) {
     pcl::console::parse_argument (argc, argv, "-time_step",                 time_step);
     pcl::console::parse_argument (argc, argv, "-terr_pointClouds_filepath", terr_pointClouds_filepath);
 
-    PcdCSF pcdCsf = PcdCSF(terr_pointClouds_filepath);
+    // PcdCSF pcdCsf = PcdCSF(terr_pointClouds_filepath);
+    PcdCSF pcdCsf = PcdCSF(terr_pointClouds_filepath, ss, atof(time_step.c_str()), atof(class_threshold.c_str()), atof(cloth_resolution.c_str()), atoi(rigidness.c_str()), atoi(iterations.c_str()));
 
     clock_t start, end;
     start = clock();
@@ -91,10 +95,18 @@ int main(int argc, char *argv[]) {
 
     end = clock();
     auto dur = (double) (end - start);
-    printf("Use Time:%f\n", (dur / CLOCKS_PER_SEC));
+    printf("Use Time: %f s\n", (dur / CLOCKS_PER_SEC));
 
-    pcdCsf.writeFile("non-ground.pcd", offGroundIndexes);
-    pcdCsf.writeFile("ground.pcd", groundIndexes);
+
+    size_t      lastindex   = terr_pointClouds_filepath.find_last_of(".");
+    std::string rawname     = terr_pointClouds_filepath.substr(0, lastindex);
+    rawname.append("_non-ground");
+    pcdCsf.writeFile(rawname.append(".pcd"), offGroundIndexes);
+    // pcdCsf.writeFile("non-ground.pcd", offGroundIndexes);
+    rawname     = terr_pointClouds_filepath.substr(0, lastindex);
+    rawname.append("_ground");
+    pcdCsf.writeFile(rawname.append(".pcd"), groundIndexes);
+    // pcdCsf.writeFile("ground.pcd", groundIndexes);
 
     return 0;
 }

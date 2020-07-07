@@ -96,7 +96,7 @@ void PcdCSF::readPointsFromFile()
 
         pointCloud->push_back(point);
     }
-    cout << "Read " << pointCloud->size() << " points.";
+    cout << "Read " << pointCloud->size() << " points." << endl;
 }
 
 void PcdCSF::writeFile(const string &file_name, const vector<int> &indexes)
@@ -122,6 +122,20 @@ PcdCSF::PcdCSF(const string &filename)
     this->readPointsFromFile();
     pcl::PCLPointCloud2::Ptr tmp(new pcl::PCLPointCloud2);
     this->cloud = *tmp;
+}
+
+PcdCSF::PcdCSF(const string &filename, bool bSloopSmooth, double time_step, double class_threshold, double cloth_resolution, int rigidness, int interations)
+{
+    this->filename = filename;
+    this->readPointsFromFile();
+    pcl::PCLPointCloud2::Ptr tmp(new pcl::PCLPointCloud2);
+    this->cloud = *tmp;
+    this->csf.params.bSloopSmooth = bSloopSmooth;
+    this->csf.params.time_step = time_step;
+    this->csf.params.class_threshold = class_threshold;
+    this->csf.params.cloth_resolution = cloth_resolution;
+    this->csf.params.rigidness = rigidness;
+    this->csf.params.interations = interations;
 }
 
 void PcdCSF::doFiltering(std::vector<int> &groundIndexes, std::vector<int> &offGroundIndexes, bool exportCloth)
