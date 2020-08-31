@@ -47,7 +47,8 @@ void PcdCSF::saveCloud(const std::string &file_name, const pcl::PCLPointCloud2 &
         pcl::console::print_value("%s ", file_name.c_str());
 
         pcl::PCDWriter w;
-        w.writeBinaryCompressed(file_name, output, translation, orientation);
+        w.writeASCII(file_name, output, translation, orientation, 8);
+        // w.writeBinaryCompressed(file_name, output, translation, orientation);
 
         pcl::console::print_info("[done, ");
         pcl::console::print_value("%g", tt.toc());
